@@ -1,0 +1,25 @@
+version: '3.3'
+
+services:
+
+  elasticsearch:
+    image: 'elasticsearch:7.10.1'
+    hostname: elasticsearch-server
+    ports:
+      - '30092:9200'
+      - '30093:9300'
+    volumes:
+      - './elastic_data:/usr/share/elasticsearch/data:rw'
+    environment:
+      - discovery.type=single-node
+    networks:
+      - ibin
+
+
+networks:
+  ibin:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "10.80.1.1/24"

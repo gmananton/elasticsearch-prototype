@@ -41,4 +41,11 @@ elastic:
 * Добавить шаблон с запросом в папку `searchTemplates` (см. [Query DSL](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html))
 * Добавить одноименный бин в конфиг `BlogRepoConfig.java`
 * Добавить пункт меню в `templates/index.html`
-                                                                                                                    
+                                            
+### Собрать и запустить приложение
+* `cd docker`
+* `./build_docker_image.sh`
+* `docker-compose -f docker-compose-elastic.yml up`
+* `docker-compose -f docker-compose-app.yml up`
+
+                                                        
