@@ -1,0 +1,32 @@
+{
+  "query": {
+    "dis_max": {
+      "queries": [
+        {
+          "match": {
+            "title": {
+              "query": "${searchString}",
+              "fuzziness": "AUTO"
+            }
+          }
+        },
+        {
+          "match": {
+            "body": {
+              "query": "${searchString}",
+              "fuzziness": "AUTO"
+            }
+          }
+        },
+        {
+          "match": {
+            "tags": {
+              "query": "${searchString}",
+              "fuzziness": "AUTO"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

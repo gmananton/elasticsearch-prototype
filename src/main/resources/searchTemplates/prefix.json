@@ -1,0 +1,23 @@
+{
+  "query": {
+    "dis_max": {
+      "queries": [
+        {
+          "prefix": {
+            "title": "${searchString}"
+          }
+        },
+        {
+          "prefix": {
+            "body": "${searchString}"
+          }
+        },
+        {
+          "prefix": {
+            "tags": "${searchString}"
+          }
+        }
+      ]
+    }
+  }
+}

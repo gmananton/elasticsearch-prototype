@@ -1,0 +1,29 @@
+{
+  "query": {
+    "dis_max": {
+      "queries": [
+        {
+          "match": {
+            "title": {
+              "query": "${searchString}"
+            }
+          }
+        },
+        {
+          "match": {
+            "body": {
+              "query": "${searchString}"
+            }
+          }
+        },
+        {
+          "match": {
+            "tags": {
+              "query": "${searchString}"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
