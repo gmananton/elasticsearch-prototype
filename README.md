@@ -43,7 +43,6 @@ elastic:
 ### Собрать и запустить приложение
 * `cd docker`
 * `./build_docker_image.sh`
-* `docker-compose -f docker-compose-elastic.yml up`
-* `docker-compose -f docker-compose-app.yml up`
+* `docker-compose up`
 
                                                         

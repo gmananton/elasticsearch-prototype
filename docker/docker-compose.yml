@@ -1,0 +1,32 @@
+version: '3.3'
+
+services:
+
+  elasticsearch:
+    image: 'elasticsearch:7.10.1'
+    ports:
+      - '30092:9200'
+      - '30093:9300'
+    environment:
+      - discovery.type=single-node
+    networks:
+      - elastic
+
+
+  elasticsearch-prototype:
+    image: elasticsearch-prototype
+    ports:
+      - 30090:8080
+    environment:
+      elastic.host: elasticsearch
+    volumes:
+      - ./elastic_healthcheck.sh:/app/elastic_healthcheck.sh  
+    entrypoint: ["/app/elastic_healthcheck.sh", "java", "-Duser.country=EN", "-Duser.timezone=GMT", "-Djava.security.egd=file:/dev/./urandom", "-Xmx256m", "-jar", "/app/app.jar"]
+    networks:
+      - elastic
+
+networks:
+  elastic:
+    driver: bridge
+    ipam:
+      driver: default
