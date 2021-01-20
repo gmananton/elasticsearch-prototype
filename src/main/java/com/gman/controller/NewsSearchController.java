@@ -1,7 +1,5 @@
 package com.gman.controller;
 
-import com.gman.domain.Article;
-import com.gman.repository.BlogRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -9,8 +7,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import com.gman.domain.Article;
+import com.gman.repository.BlogRepository;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -25,10 +27,14 @@ import static java.util.stream.Collectors.toList;
 @Slf4j
 public class NewsSearchController {
 
-
-//    private final SimpleBlogRepository repository;
-
     private final Map<String, BlogRepository> repos;
+
+    @GetMapping("listQueryTemplates")
+    public Collection<String> getQueryTemplateList() {
+        var list = new ArrayList<>(repos.keySet());
+        list.sort(Comparator.naturalOrder());
+        return list;
+    }
 
     @GetMapping("listNews")
     public List<News> getAll() {

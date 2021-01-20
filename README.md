@@ -39,8 +39,6 @@ elastic:
 
 ### Если надо добавить новый механизм поиска
 * Добавить шаблон с запросом в папку `searchTemplates` (см. [Query DSL](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html))
-* Добавить одноименный бин в конфиг `BlogRepoConfig.java`
-* Добавить пункт меню в `templates/index.html`
                                             
 ### Собрать и запустить приложение
 * `cd docker`

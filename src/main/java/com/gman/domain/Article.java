@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.Singular;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.Document;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -20,12 +18,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Document(indexName = "blog")
 public class Article {
-
-    @Id
-    @Getter
-    private int id;
 
     @Getter
     private String title;

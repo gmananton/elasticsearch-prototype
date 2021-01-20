@@ -2,19 +2,18 @@ package com.gman.index;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gman.domain.Article;
-import com.gman.repository.BlogRepository;
-import com.gman.util.FileHelper;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import com.gman.domain.Article;
+import com.gman.repository.BlogRepository;
+import com.gman.util.FileHelper;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Anton Mikhaylov on 23.12.2020.
@@ -23,22 +22,18 @@ import java.util.List;
 @Slf4j
 public class IndexInitializer {
 
-    @Qualifier("strict_match")
     @Autowired
-    private  BlogRepository repository;
+    private Map<String, BlogRepository> repos;
 
     @Autowired
     private  ObjectMapper mapper;
-
-    private static final String INDEX_NAME = "blog";
-    private static final String TYPE_NAME = "post";
 
     @PostConstruct
     @SneakyThrows
     public void init() {
         deleteIndex();
         mapper.readValue(FileHelper.loadResource("/news.json"), new TypeReference<List<Article>>() {
-        }).stream().forEach(repository::save);
+        }).stream().forEach(getAnyRepo()::save);
     }
 
     @PreDestroy
@@ -48,10 +43,14 @@ public class IndexInitializer {
 
     private void deleteIndex() {
         try {
-            repository.deleteAll();
+            getAnyRepo().deleteAll();
         } catch (Exception e) {
 
         }
+    }
+
+    private BlogRepository getAnyRepo() {
+        return repos.get(repos.keySet().stream().findAny().get());
     }
 
 

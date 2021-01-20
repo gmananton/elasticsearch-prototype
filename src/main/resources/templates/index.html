@@ -8,23 +8,40 @@
 
 <nav class="navbar bg-light">
 
-    <ul class="navbar-nav">
-        <li class="nav-item">
-            <a class="nav-link" href="/news?queryType=strict_match">Strict match</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="/news?queryType=fuzzy_match">Fuzzy match</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="/news?queryType=prefix">Prefix</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="/news?queryType=multi_match">Multi-match with fuzziness</a>
-        </li>
+    <ul id="menu" class="navbar-nav">
     </ul>
 
 </nav>
 
+<script type="text/javascript">
+    var menu = document.getElementById('menu');
+    document.addEventListener('DOMContentLoaded', function () {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/listQueryTemplates", true);
+        xhr.onreadystatechange = function () {
 
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                menu.innerHTML = '';
+                var result = JSON.parse(xhr.response);
+                if (result.length === 0) {
+                    return;
+                }
+
+                result.forEach(el => {
+                    var listItem = document.createElement("li");
+                    listItem.className = "nav-item";
+                    var a = document.createElement("a");
+                    a.className = "nav-link";
+                    a.innerHTML = el;
+                    a.href = "/news?queryType=" + el;
+                    listItem.appendChild(a)
+                    menu.appendChild(listItem);
+                })
+            }
+        }
+
+        xhr.send(null);
+    });
+</script>
 </body>
 </html>

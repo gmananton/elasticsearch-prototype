@@ -1,90 +1,72 @@
 package com.gman.config;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gman.repository.BlogRepository;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.http.HttpHost;
+import lombok.SneakyThrows;
 import org.elasticsearch.client.RestClient;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
+import com.gman.repository.BlogRepository;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static java.util.stream.Collectors.toList;
+import static org.springframework.beans.factory.support.BeanDefinitionBuilder.genericBeanDefinition;
 
 /**
  * Created by Anton Mikhaylov on 19.01.2021.
  */
 @Configuration
-@EnableConfigurationProperties(BlogRepoConfig.ElasticServerProps.class)
-@RequiredArgsConstructor
 public class BlogRepoConfig {
 
-    private final ElasticServerProps props;
-
-    @ConfigurationProperties(prefix = "elastic")
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    public static class ElasticServerProps {
-
-        String host;
-        int port;
-    }
-
-    @Bean("strict_match")
-    public BlogRepository strictMatchRepo() {
-        return new BlogRepository(elasticClient(), objectMapper()) {
-            @Override
-            protected String getQueryTemplateName() {
-                return "strict_match";
-            }
-        };
-    }
-
-    @Bean("fuzzy_match")
-    public BlogRepository fuzzyMatchRepo() {
-        return new BlogRepository(elasticClient(), objectMapper()) {
-            @Override
-            protected String getQueryTemplateName() {
-                return "fuzzy_match";
-            }
-        };
-    }
-
-    @Bean("prefix")
-    public BlogRepository prefixRepo() {
-        return new BlogRepository(elasticClient(), objectMapper()) {
-            @Override
-            protected String getQueryTemplateName() {
-                return "prefix";
-            }
-        };
-    }
-
-    @Bean("multi_match")
-    public BlogRepository multiMatchRepo() {
-        return new BlogRepository(elasticClient(), objectMapper()) {
-            @Override
-            protected String getQueryTemplateName() {
-                return "multi_match";
-            }
-        };
-    }
-
     @Bean
-    public RestClient elasticClient() {
-        return RestClient.builder(new HttpHost(props.getHost(), props.getPort(), "http")).build();
+    public BlogRepoRegistrar beanDefinitionRegistrar(RestClient elasticClient, ObjectMapper mapper) {
+        return new BlogRepoRegistrar(elasticClient, mapper);
     }
 
-    @Bean
-    public ObjectMapper objectMapper() {
-        var mapper = new ObjectMapper();
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        return mapper;
+    @RequiredArgsConstructor
+    public class BlogRepoRegistrar implements BeanDefinitionRegistryPostProcessor {
+
+        private final RestClient elasticClient;
+        private final ObjectMapper mapper;
+
+        @Override
+        public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
+
+            getQueryTemplateNames().forEach(tName -> {
+                registry.registerBeanDefinition(tName, genericBeanDefinition(BlogRepository.class,
+                        () -> new BlogRepository(elasticClient, mapper) {
+                            @Override
+                            protected String getQueryTemplateName() {
+                                return tName;
+                            }
+                        }).getBeanDefinition());
+            });
+
+        }
+
+        @Override
+        public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+
+        }
+    }
+
+    @SneakyThrows
+    private List<String> getQueryTemplateNames() {
+        ClassLoader cl = this.getClass().getClassLoader();
+        ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(cl);
+        return Arrays.stream(resolver.getResources("classpath*:searchTemplates/*.json"))
+                .map(Resource::getFilename)
+                .map(s -> s.substring(0, s.indexOf(".json")))
+                .collect(toList());
     }
 
 }

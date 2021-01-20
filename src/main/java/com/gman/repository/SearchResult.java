@@ -1,8 +1,8 @@
 package com.gman.repository;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.gman.domain.Article;
 import lombok.Data;
+import com.gman.domain.Article;
 
 import java.util.List;
 

@@ -1,8 +1,6 @@
 package com.gman.repository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gman.domain.Article;
-import com.gman.util.FileHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +8,8 @@ import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
+import com.gman.domain.Article;
+import com.gman.util.FileHelper;
 
 import java.util.List;
 import java.util.stream.Collectors;
