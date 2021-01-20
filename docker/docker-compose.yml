@@ -5,8 +5,8 @@ services:
   elasticsearch:
     image: 'elasticsearch:7.10.1'
     ports:
-      - '30092:9200'
-      - '30093:9300'
+      - 30092:9200
+      - 30093:9300
     environment:
       - discovery.type=single-node
     networks:
@@ -16,7 +16,7 @@ services:
   elasticsearch-prototype:
     image: elasticsearch-prototype
     ports:
-      - 30090:8080
+      - 30080:8080
     environment:
       elastic.host: elasticsearch
     volumes:
